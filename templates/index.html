@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Car Chatbot</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h1>Car Chatbot</h1>
+        <p>Ask me anything about cars!</p>
+        <div class="chat-box" id="chatBox"></div>
+        <form id="chatForm">
+            <input type="text" id="questionInput" placeholder="Type your question here..." required>
+            <button type="submit">Send</button>
+        </form>
+    </div>
+
+    <script>
+        const form = document.getElementById('chatForm');
+        const chatBox = document.getElementById('chatBox');
+        const input = document.getElementById('questionInput');
+
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const question = input.value.trim();
+            if (!question) return;
+
+            // Display user's question
+            addMessage('You', question, 'user-message');
+            input.value = '';  // Clear input
+
+            // Send question to the server
+            try {
+                const response = await fetch('/chat', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ question: question })
+                });
+                const data = await response.json();
+
+                // Display chatbot's response
+                if (data.answer) {
+                    addMessage('Chatbot', data.answer, 'bot-message');
+                } else if (data.error) {
+                    addMessage('Chatbot', `Error: ${data.error}`, 'error-message');
+                }
+            } catch (error) {
+                addMessage('Chatbot', `Error: ${error.message}`, 'error-message');
+            }
+        });
+
+        function addMessage(sender, text, className) {
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${className}`;
+            messageDiv.innerHTML = `<strong>${sender}:</strong> ${text}`;
+            chatBox.appendChild(messageDiv);
+            chatBox.scrollTop = chatBox.scrollHeight;  // Auto-scroll to bottom
+        }
+    </script>
+</body>
+</html>
