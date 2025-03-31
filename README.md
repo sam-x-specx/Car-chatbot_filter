@@ -91,6 +91,8 @@ Feel free to open issues or submit pull requests.
 - Create `venv/` file.
 - Create `.env` file.
 
+### Now only for Cohere
+
 ```COHERE_API_KEY = "YOUR_API_KEY" # Add your API key here ```
 
 ---
